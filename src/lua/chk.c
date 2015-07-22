@@ -1,5 +1,5 @@
 /* libquvi
- * Copyright (C) 2012,2013  Toni Gundogdu <legatvs@gmail.com>
+ * Copyright (C) 2012  Toni Gundogdu <legatvs@gmail.com>
  *
  * This file is part of libquvi <http://quvi.sourceforge.net/>.
  *
@@ -30,7 +30,6 @@
 /* -- */
 #include "lua/chk.h"
 #include "lua/def.h"
-#include "misc/url.h"
 #include "misc/re.h"
 
 /*
@@ -52,7 +51,7 @@ gboolean l_chk_can_parse_url(lua_State *l, _quvi_script_t qs,
   lua_pushnil(l);
   while (lua_next(l, LI_KEY))
     {
-      l_chk_assign_s(l, k_domains, qs->domains, TRUE, FALSE);
+      l_chk_assign_s(l, k_domains, qs->domains, TRUE);
       l_chk_assign_b(l, k_can_parse_url, &r);
       lua_pop(l, 1);
     }
@@ -71,8 +70,7 @@ gboolean l_chk_can_parse_url(lua_State *l, _quvi_script_t qs,
  *
  * NOTE: g_free the returned value when done using it.
  */
-gboolean l_chk_s(lua_State *l, const gchar *w, gchar **v,
-                 gboolean trim_flag, gboolean escape_url)
+gboolean l_chk_s(lua_State *l, const gchar *w, gchar **v, gboolean trim_flag)
 {
   if (lua_isstring(l, LI_KEY) && lua_isstring(l, LI_VALUE))
     {
@@ -82,12 +80,6 @@ gboolean l_chk_s(lua_State *l, const gchar *w, gchar **v,
           *v = (trim_flag == TRUE)
                ? m_trim_ws(s)
                : g_strdup(s);
-          if (escape_url == TRUE)
-            {
-              gchar *e = m_url_escaped_form(*v);
-              g_free(*v);
-              *v = e;
-            }
           return (TRUE);
         }
     }
@@ -95,10 +87,10 @@ gboolean l_chk_s(lua_State *l, const gchar *w, gchar **v,
 }
 
 gboolean l_chk_assign_s(lua_State *l, const gchar *k, GString *v,
-                        gboolean trim_flag, gboolean escape_url)
+                        gboolean trim_flag)
 {
   gchar *s = NULL;
-  if (l_chk_s(l, k, &s, trim_flag, escape_url) == TRUE)
+  if (l_chk_s(l, k, &s, trim_flag) == TRUE)
     {
       g_string_assign(v, s);
       g_free(s);
