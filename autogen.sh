@@ -60,6 +60,4 @@ do
 done
 
 echo "Generate configuration files..."
-autoreconf -if && echo "You can now run 'configure'"
-
-./configure "$@"
+autoreconf -if && ./configure "$@"
